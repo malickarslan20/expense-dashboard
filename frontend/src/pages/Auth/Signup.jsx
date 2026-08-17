@@ -1,7 +1,7 @@
 import React, {useState, useContext} from 'react'
-import AuthLayout from "../../components/layouts/AuthLayout";
+import AuthLayout from "../../components/layouts/Authlayout";
+import Input from "../../components/Inputs/Input";
 import { useNavigate } from "react-router-dom";
-import Input from "../../components/Inputs/input";
 import { validateEmail } from "../../utils/helper";
 import ProfilePicSelector from '../../components/Inputs/ProfilePicSelector';
 import axiosInstance  from "../../utils/axiosInstance";
