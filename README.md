@@ -1,3 +1,8 @@
+Demo Credentials:
+arsal1122@gmail.com
+12345678
+
+
 Expense Tracker
 A full-stack expense tracking web application built with the MERN stack (MongoDB, Express, React, Node.js) that helps users manage their personal finances with ease.
 
