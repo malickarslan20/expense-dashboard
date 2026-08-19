@@ -11,19 +11,20 @@ import uploadImage from '../../utils/uploadImage';
 
 function Signup() {
   const [profilePic, setProfilePic] = useState(null);
-const [fullname, setFullname] = useState("");
-const [email, setEmail] = useState("");
-const [password, setPassword] = useState("");
-const [error, setError] = useState(null);
+  const [fullname, setFullname] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
 
-const {updateUser} = useContext(UserContext);
+  const {updateUser} = useContext(UserContext);
   const navigate = useNavigate();
 
   //handle SignUp form submit
   const handleSignup = async (e) => {
     e.preventDefault();
 
-    let profileImageURL = ""; // ✅ declare variable
+    let profileImageURL = "";
 
     if (!validateEmail(email)) {
       setError("Please enter a valid email address.");
@@ -38,24 +39,22 @@ const {updateUser} = useContext(UserContext);
       return;
     }
     setError(null);
-    // Signup API call
+    setIsLoading(true);
 
     try {
-
-//upload image if present
-if (profilePic) {
-  const imgUploadRes = await uploadImage(profilePic);
-  profileImageURL = imgUploadRes.imageUrl || "";
-}
+      //upload image if present
+      if (profilePic) {
+        const imgUploadRes = await uploadImage(profilePic);
+        profileImageURL = imgUploadRes.imageUrl || "";
+      }
 
       const response = await axiosInstance.post(API_PATHS.AUTH.REGISTER, {
-         fullname,
+        fullname,
         email,
         password,
         profileImageURL
-        
       });
-     
+
       const {token , user} = response.data;
       if (token) {
         localStorage.setItem("token", token);
@@ -69,55 +68,65 @@ if (profilePic) {
       } else {
         setError("An error occurred during signup. Please try again.");
       }
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
     <AuthLayout>
-      <div className="lg:w-[70%] h-3/4 md:h-full flex flex-col justify-center">
-        <h3 className="text-xl font-semibold text-black">Create an Account</h3>
+      <div className="w-full px-4 sm:px-6 lg:w-[70%] lg:px-0 h-auto lg:h-full flex flex-col justify-center py-8 lg:py-0">
+        <h3 className="text-lg sm:text-xl font-semibold text-black">Create an Account</h3>
         <p className="text-xs text-slate-700 mt-[5px] mb-6">
           Join Us Today by entering your details below.
         </p>
 
         <form onSubmit={handleSignup}>
           <ProfilePicSelector image={profilePic} setImage={setProfilePic} />
-          <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-          <Input
-            value={fullname}
-            onChange={({ target }) => setFullname(target.value)}
-            label="Full Name"
-            placeholder="John Doe"
-            type="text"
-          />
+          <div className='grid grid-cols-1 sm:grid-cols-2 gap-4'>
+            <Input
+              value={fullname}
+              onChange={({ target }) => setFullname(target.value)}
+              label="Full Name"
+              placeholder="John Doe"
+              type="text"
+            />
 
-          <Input
-            value={email}
-            onChange={({ target }) => setEmail(target.value)}
-            label="Email Address"
-            placeholder="john@example.com"
-            type="text"
-          />
-          <div className='col-span-2'>
-          <Input
-            value={password}
-            onChange={({ target }) => setPassword(target.value)}
-            label="Password"
-            placeholder="••••••••"
-            type="password"
-          />
+            <Input
+              value={email}
+              onChange={({ target }) => setEmail(target.value)}
+              label="Email Address"
+              placeholder="john@example.com"
+              type="text"
+            />
+            <div className='sm:col-span-2'>
+              <Input
+                value={password}
+                onChange={({ target }) => setPassword(target.value)}
+                label="Password"
+                placeholder="••••••••"
+                type="password"
+              />
+            </div>
           </div>
-           </div>
           {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
 
           <button
             type="submit"
-            className="btn-primary w-full"
+            disabled={isLoading}
+            className="btn-primary w-full flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
           >
-            Sign Up
+            {isLoading ? (
+              <>
+                <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                Signing Up...
+              </>
+            ) : (
+              "Sign Up"
+            )}
           </button>
 
-          <p className="text-sm text-slate-700 mt-4">
+          <p className="text-sm text-slate-700 mt-4 text-center sm:text-left">
             Already have an account?{" "}
             <button
               type="button"
@@ -127,7 +136,7 @@ if (profilePic) {
               Log In
             </button>
           </p>
-         
+
         </form>
 
       </div>

@@ -10,6 +10,7 @@ const Login = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState(null);
+    const [isLoading, setIsLoading] = useState(false);
 
     const { updateUser } = useContext(UserContext);
 
@@ -28,6 +29,7 @@ const Login = () => {
         }
 
         setError(" ") // Clear previous error
+        setIsLoading(true);
 
         //login API call
 
@@ -52,13 +54,15 @@ const Login = () => {
             } else {
                 setError("An error occurred during login. Please try again.");
             }
+        } finally {
+            setIsLoading(false);
         }
     }
 
     return (
         <AuthLayout>
-            <div className="lg:w-[70%] h-3/4 md:h-full flex flex-col justify-center">
-                <h3 className="text-xl font-semibold text-black">Welcome Back</h3>
+            <div className="w-full px-4 sm:px-6 lg:w-[70%] lg:px-0 h-auto lg:h-full flex flex-col justify-center py-8 lg:py-0">
+                <h3 className="text-lg sm:text-xl font-semibold text-black">Welcome Back</h3>
                 <p className="text-xs text-slate-700 mt-[5px] mb-6">
                     Please enter your details to log in
                 </p>
@@ -84,12 +88,20 @@ const Login = () => {
 
                     <button
                         type="submit"
-                        className="btn-primary w-full"
+                        disabled={isLoading}
+                        className="btn-primary w-full flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
                     >
-                        Log In
+                        {isLoading ? (
+                            <>
+                                <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                                Logging In...
+                            </>
+                        ) : (
+                            "Log In"
+                        )}
                     </button>
 
-                    <p className="text-sm text-slate-700 mt-4">
+                    <p className="text-sm text-slate-700 mt-4 text-center sm:text-left">
                         Don't have an account?{" "}
                         <button
                             type="button"
